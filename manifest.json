@@ -1,0 +1,54 @@
+  {
+    "name": "YouTube Default Playback Speed",
+    "version": "2.0",
+    "description": "Set the default playback speed for YouTube videos! Complete with hotkeys to set the current YouTube video speed.",
+    "permissions": ["activeTab","declarativeContent","storage"],
+    "content_scripts": [
+      {
+        "matches": ["https://*.youtube.com/*"],
+        "run_at": "document_end",
+        "js": ["js/set_playback.js"]  
+      }
+    ],
+    "background": {
+      "scripts": ["js/background_init.js", "js/background_hotkeys.js"],
+      "persistent": false
+    },
+    "page_action": {
+      "default_popup": "html/popup.html",
+      "default_icon": {
+        "16": "images/youtube_playback16.png",
+        "32": "images/youtube_playback32.png",
+        "48": "images/youtube_playback48.png",
+        "128": "images/youtube_playback128.png"
+      }
+    },
+    "commands": {
+      "set-half-speed": {
+        "suggested_key": {
+          "default": "Alt+3"
+        },
+        "description": "Set video playback to half speed"
+      },
+      "set-normal-speed": {
+        "suggested_key": {
+          "default": "Alt+1"
+        },
+        "description": "Set video playback to normal speed"
+      },
+      "set-double-speed": {
+        "suggested_key": {
+          "default": "Alt+2"
+        },
+        "description": "Set video playback to double speed"
+      }
+    },
+    "options_page": "html/options.html",
+    "icons": {
+      "16": "images/youtube_playback16.png",
+      "32": "images/youtube_playback32.png",
+      "48": "images/youtube_playback48.png",
+      "128": "images/youtube_playback128.png"
+    },
+    "manifest_version": 2
+  }
