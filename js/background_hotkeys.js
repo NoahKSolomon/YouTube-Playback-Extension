@@ -26,5 +26,16 @@ chrome.commands.onCommand.addListener(function(command) {
                 );
             });
             break;
-    }
+        case 'set-default-speed':
+            chrome.storage.sync.get('playback', function(data) {
+                chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+                    chrome.tabs.executeScript(
+                      tabs[0].id,
+                      {code: 'document.getElementsByTagName("video")[0].playbackRate = ' + data.playback + ';'}
+                    );
+                });
+            });
+            break;
+        }
+    
 });

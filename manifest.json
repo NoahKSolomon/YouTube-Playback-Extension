@@ -41,6 +41,12 @@
           "default": "Alt+2"
         },
         "description": "Set video playback to double speed"
+      },
+      "set-default-speed": {
+        "suggested_key": {
+          "default": "Alt+4"
+        },
+        "description": "Set video playback to set default speed"
       }
     },
     "options_page": "html/options.html",
