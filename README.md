@@ -14,7 +14,7 @@ After completing the steps above, you should see a new extension appear in your 
 I have not published this to the Chome store because I don't want to pay the fee to publish.
 
 ## Overview of Features
-The main popup for the extension allows you to set the default playback speed for youtube videos along with buttons to set the speed of the video in the current tab to half, normal, and double speed. The extension also provides hotkeys for quickly changing the speed of the video in the current tab.
+The main popup for the extension allows you to set the default playback speed for YouTube videos along with buttons to set the speed of the video in the current tab to half, normal, and double speed. The extension also provides hotkeys for quickly changing the speed of the video in the current tab.
 - Alt+1 sets the current tab to normal speed
 - Alt+2 sets the current tab to double speed
 - Alt+3 sets the current tab to half speed
