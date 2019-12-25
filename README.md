@@ -18,4 +18,4 @@ The main popup for the extension allows you to set the default playback speed fo
 - Alt+1 sets the current tab to normal speed
 - Alt+2 sets the current tab to double speed
 - Alt+3 sets the current tab to half speed
-- Alt+4 sets the current tab to the saved dafaulf speed
+- Alt+4 sets the current tab to the saved default speed
