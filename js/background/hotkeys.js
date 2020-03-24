@@ -1,7 +1,11 @@
+
+
 // Send a message to the current active tab
-function messageActiveTab(message) {
+function setSpeedInActiveTab(speed) {
     chrome.tabs.query({active: true, currentWindow: true}, tabs => { // Get current active tab
-        chrome.tabs.sendMessage(tabs[0].id, message); // Message current active tab to set new speed
+        chrome.tabs.executeScript(tabs[0].id, {
+            code: 'setPlayback(' + speed + ');'
+        }); // Inject script into current active tab to set new speed
     }); 
 }
 
@@ -22,13 +26,13 @@ chrome.commands.onCommand.addListener( command => {
             break;
         case 'set-default-speed':
             chrome.storage.sync.get('playback', data => {
-                messageActiveTab({newSpeed: data.playback});
+                setSpeedInActiveTab(data.playback);
             });
             break;
     }
     // If changed
     if(change_to > 0) {
         // Send message to current active tab to update playback speed
-        messageActiveTab({newSpeed: change_to});
+        setSpeedInActiveTab(change_to);
     }
 });

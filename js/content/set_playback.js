@@ -9,13 +9,6 @@ function setPlayback(speed) {
     }
 }
 
-// Listener for setting a new speed
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if(message.newSpeed) {
-        setPlayback(message.newSpeed);
-    }
-});
-
 // Check for existence of video tags to set playback of upon initial injection
 if(!(document.getElementsByTagName("video")[0] === undefined)) {
     chrome.storage.sync.get('playback', data => {
