@@ -5,13 +5,13 @@
     "permissions": ["activeTab","declarativeContent","storage"],
     "content_scripts": [
       {
-        "matches": ["https://*.youtube.com/*"],
+        "matches": ["https://*.youtube.com/watch*"],
         "run_at": "document_end",
-        "js": ["js/set_playback.js"]  
+        "js": ["js/content/set_playback.js"]  
       }
     ],
     "background": {
-      "scripts": ["js/background_init.js", "js/background_hotkeys.js"],
+      "scripts": ["js/background/init.js", "js/background/hotkeys.js"],
       "persistent": false
     },
     "page_action": {
