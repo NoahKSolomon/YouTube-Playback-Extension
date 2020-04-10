@@ -29,6 +29,16 @@ chrome.commands.onCommand.addListener( command => {
                 setSpeedInActiveTab(data.playback);
             });
             break;
+        case 'increment-speed':
+            chrome.tabs.query({active:true, currentWindow:true}, tabs => {
+                chrome.tabs.executeScript(tabs[0].tabId, {file: 'js/content/increment.js'});
+            });
+            break;
+        case 'decrement-speed':
+            chrome.tabs.query({active:true, currentWindow:true}, tabs => {
+                chrome.tabs.executeScript(tabs[0].tabId, {file: 'js/content/decrement.js'});
+            });
+            break;
     }
     // If changed
     if(change_to > 0) {
