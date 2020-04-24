@@ -5,16 +5,66 @@
     </head>
     <body id="yt_def_sp_body">
       <div>
-        <h2>Set a default playback speed</h2>
+        <h2 class="title">Set a default playback speed</h2>
         <p id="display_speed"></p>
         <input id="playback_input" type="number" min="0.1" step="0.1">
         <button class="red" id="playback_set_save_button">Set Speed</button>
+        <p id="display_inc"></p>
+        <input id="inc_input" type="number" min="0.1" step="0.1">
+        <button class="red" id="inc_set_save_button">Set Increment</button>
       </div>
       <div>
         <p>Quick Change for Current Tab:</p>
         <button class="red" id="half_speed_button" title="Alt+3">0.5x</button>
         <button class="red" id="normal_speed_button" title="Alt+1">1x</button>
         <button class="red" id="double_speed_button" title="Alt+2">2x</button>
+      </div>
+      <button type="button" class="collapsible">How to Use This Extension</button>
+      <div class="how-to-use-content">
+        <!-- START COLLAPSIBLES -->
+        <button type="button" class="collapsible">Hotkeys</button>
+        <div class="how-to-use-content">
+          <table class="hotkey-table">
+          <thead>
+            <tr>
+              <th>Hotkey</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Alt+1</td>
+              <td>Set the current tab speed to 1x (normal speed).</td>
+            </tr>
+            <tr>
+              <td>Alt+2</td>
+              <td>Set the current tab speed to specified default speed.</td>
+            </tr>
+            <tr>
+              <td>Alt+Up</td>
+              <td>Increase the current tab speed by the increment amount.</td>
+            </tr>
+            <tr>
+              <td>Alt+Down</td>
+              <td>Decrease the current tab speed by the increment amount.</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>You can set more hotkeys by navigating to chrome://extensions/shortcuts.</p>
+        </div>
+        <button type="button" class="collapsible">Default Speed</button>
+        <div class="how-to-use-content">
+          <p>
+          You can set a default video speed using the above input field and press enter or the 'Set Speed' button. The default speed amount is 1x (normal speed).
+          </p>
+        </div>
+        <button type="button" class="collapsible">Increment</button>
+        <div class="how-to-use-content">
+          <p>
+          Similar to the default speed, you can set an increment amount using the above input field and press enter or the 'Set Increment' button. The default increment amount is 0.25x.
+          </p>
+        </div>
+        <!-- END COLLAPSIBLES -->
       </div>
       <script src="../js/popup.js"></script>
     </body>

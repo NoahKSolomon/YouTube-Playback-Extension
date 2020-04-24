@@ -1,6 +1,8 @@
-let parag = document.getElementById("display_speed");
+let speed_parag = document.getElementById("display_speed");
+let inc_parag = document.getElementById("display_inc");
 let set_save_button = document.getElementById("playback_set_save_button");
-let input_tag = document.getElementById("playback_input");
+let speed_input_tag = document.getElementById("playback_input");
+let inc_input_tag = document.getElementById("inc_input");
 
 // Set the speed of the current active tab
 function updateSpeed(speed) {
@@ -14,13 +16,23 @@ function updateSpeed(speed) {
 }
 
 // Display current default speed in popup.html
-chrome.storage.sync.get('playback', data => {
-  parag.innerHTML = "Current default: " + data.playback + "x";
-  input_tag.value = data.playback;
+chrome.storage.sync.get(['playback', 'increment'], data => {
+  speed_parag.innerHTML = "Current default: " + data.playback + "x";
+  inc_parag.innerHTML = "Current increment: " + data.increment + "x";
+  speed_input_tag.value = data.playback;
+  inc_input_tag.value = data.increment;
 });
 
 // Set the enter key press to activate the 'save' button
-input_tag.addEventListener("keyup", event => {
+speed_input_tag.addEventListener("keyup", event => {
+  // Key 13 is the enter key
+  if(event.keyCode === 13) {
+    event.preventDefault();
+    set_save_button.click();
+  }
+});
+
+inc_input_tag.addEventListener("keyup", event => {
   // Key 13 is the enter key
   if(event.keyCode === 13) {
     event.preventDefault();
@@ -33,16 +45,28 @@ var buttons = document.getElementById('yt_def_sp_body').getElementsByClassName('
 for(var i = 0; i < buttons.length; i++) {
   if(buttons[i].id === 'playback_set_save_button') { // Set the onclick method for the save speed button
     buttons[i].onclick = element => {
-      let to_save = Number(input_tag.value);
+      let to_save = Number(speed_input_tag.value);
       // Check for valid video speeds
       if(to_save != NaN && to_save > 0) {
         chrome.storage.sync.set({playback: to_save}, function() {
-          parag.innerHTML = "Current default: " + to_save + "x";
+          speed_parag.innerHTML = "Current default: " + to_save + "x";
         });
         // Set actual speed in tab
         updateSpeed(to_save);
       } else {
-        parag.innerHTML = "Not a valid video speed. Input another speed.";
+        speed_parag.innerHTML = "Not a valid video speed. Input another speed.";
+      }
+    };
+  } else if (buttons[i].id === 'inc_set_save_button') { // Set onclick functions for set increment button
+    buttons[i].onclick = element => {
+      let to_save = Number(inc_input_tag.value);
+      // Check for valid video speeds
+      if(to_save != NaN && to_save > 0) {
+        chrome.storage.sync.set({increment: to_save}, function() {
+          inc_parag.innerHTML = "Current default: " + to_save + "x";
+        });
+      } else {
+        inc_parag.innerHTML = "Not a valid video speed. Input another speed.";
       }
     };
   } else { // Set onclick function for half, normal, and double speed buttons
@@ -52,4 +76,28 @@ for(var i = 0; i < buttons.length; i++) {
       updateSpeed(speed);
     };
   }
+}
+
+// Set the collabsible functionality
+var coll = document.getElementsByClassName("collapsible");
+var i;
+
+for (i = 0; i < coll.length; i++) {
+  coll[i].addEventListener("click", function() {
+    this.classList.toggle("active");
+    var content = this.nextElementSibling;
+    if (content.style.maxHeight){
+      content.style.maxHeight = null;
+      content.style.overflow = "hidden";
+    } else {
+      content.style.maxHeight = content.scrollHeight + "px";
+      if(this.parentElement.classList.contains("how-to-use-content")) {
+        var par = this.parentElement;
+        par_max_h = par.style.maxHeight.substring(0,par.style.maxHeight.length-2);
+        par.style.maxHeight = (Number(par_max_h) + Number(content.scrollHeight)) + "px";
+      }
+      //content.style.maxHeight = "none";
+      //content.style.overflow = "auto";
+    }
+  });
 }
