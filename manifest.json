@@ -1,6 +1,6 @@
   {
     "name": "YouTube Default Playback Speed",
-    "version": "2.1.0",
+    "version": "2.1.1",
     "description": "Set the default playback speed for YouTube videos! Complete with hotkeys to manipulate the current video speed.",
     "permissions": ["activeTab", "declarativeContent", "storage", "tabs", "*://www.youtube.com/watch*"],
     "content_scripts": [

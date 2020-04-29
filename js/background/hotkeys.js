@@ -4,7 +4,8 @@
 function setSpeedInActiveTab(speed) {
     chrome.tabs.query({active: true, currentWindow: true}, tabs => { // Get current active tab
         chrome.tabs.executeScript(tabs[0].id, {
-            code: 'document.getElementsByTagName("video")[0].playbackRate = ' + speed + ';'
+            code: 'document.getElementsByTagName("video")[0].playbackRate = ' + speed + ';\
+                   add_new_time();'
         }); // Inject script into current active tab to set new speed
     }); 
 }

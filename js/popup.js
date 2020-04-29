@@ -3,16 +3,55 @@ let inc_parag = document.getElementById("display_inc");
 let set_save_button = document.getElementById("playback_set_save_button");
 let speed_input_tag = document.getElementById("playback_input");
 let inc_input_tag = document.getElementById("inc_input");
+let categoy_list = [
+  "Film & Animation",
+  "Autos & Vehicles",
+  "Music",
+  "Pets & Animals",
+  "Sports",
+  "Travel & Events",
+  "Gaming",
+  "People & Blogs",
+  "Comedy",
+  "Entertainment",
+  "News & Politics",
+  "Howto & Style",
+  "Education",
+  "Nonprofits & Activism"];
 
 // Set the speed of the current active tab
-function updateSpeed(speed) {
-  // Get the active tab in the current window
-  chrome.tabs.query({active: true, currentWindow: true}, tabs => {
-    // Inject script into current active tab to set new speed
-    chrome.tabs.executeScript(tabs[0].id, {
-      code: 'document.getElementsByTagName("video")[0].playbackRate = ' + speed + ';'
-    }); 
-  });
+function updateSpeed(speed, save_as_default=false) {
+
+  // Check for valid speeds
+  if(speed != NaN && speed > 0) { // Valid speed
+
+    // Save 'speed' as new dafault
+    if(save_as_default) {
+      chrome.storage.sync.set({playback: speed}, function() {
+        // Display new default speed
+        speed_parag.innerHTML = "Current default: " + speed + "x";
+        // Set speed of current tab
+        chrome.tabs.query({active: true, currentWindow: true}, tabs => {
+          // Inject script into current active tab to set new speed
+          chrome.tabs.executeScript(tabs[0].id, {
+            file: 'js/content/set_playback.js'
+          }); 
+        });
+      });
+    } else { // Don't save speed as default
+      // Get current active tab
+      chrome.tabs.query({active: true, currentWindow: true}, tabs => {
+        // Inject script into current active tab to set new speed
+        chrome.tabs.executeScript(tabs[0].id, {
+          code: 'document.getElementsByTagName("video")[0].playbackRate = ' + speed + ';\
+                 add_new_time();'
+        }); 
+      });
+    }
+
+    
+  }
+  
 }
 
 // Display current default speed in popup.html
@@ -45,17 +84,10 @@ var buttons = document.getElementById('yt_def_sp_body').getElementsByClassName('
 for(var i = 0; i < buttons.length; i++) {
   if(buttons[i].id === 'playback_set_save_button') { // Set the onclick method for the save speed button
     buttons[i].onclick = element => {
-      let to_save = Number(speed_input_tag.value);
-      // Check for valid video speeds
-      if(to_save != NaN && to_save > 0) {
-        chrome.storage.sync.set({playback: to_save}, function() {
-          speed_parag.innerHTML = "Current default: " + to_save + "x";
-        });
+        let to_save = Number(speed_input_tag.value);
         // Set actual speed in tab
-        updateSpeed(to_save);
-      } else {
-        speed_parag.innerHTML = "Not a valid video speed. Input another speed.";
-      }
+        updateSpeed(to_save, true);
+      
     };
   } else if (buttons[i].id === 'inc_set_save_button') { // Set onclick functions for set increment button
     buttons[i].onclick = element => {
