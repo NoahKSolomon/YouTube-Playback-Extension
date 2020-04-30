@@ -14,13 +14,22 @@ function add_new_time() {
     let dur = vid.duration / vid.playbackRate;
     
 	// Calculate the duration with the current speed
-	let hours = Math.floor(dur / 3600);
-    let minutes = Math.floor(dur / 60) - hours * dur;
-    let seconds = dur - minutes * 60;
+    // 3600 --> Number of seconds in one hour
+    // 60   --> Number of seconds in one minute
+	let hours = Math.floor(dur / 3600); // Length of video in hours
+    let minute_overflow = Math.floor(dur / 60) - hours * 60; // Leftover minutes after removing hours
+    let second_overflow = Math.floor(dur - Math.floor(dur / 60) * 60); // Leftover seconds after removing minutes
     let time_str = "";
-    time_str = (seconds < 10) ? "0" + seconds.toFixed(0) : seconds.toFixed(0);
-    time_str = (minutes < 10 && hours > 0) ? "0" + minutes.toFixed(0) + ":" + time_str : minutes.toFixed(0) + ":" + time_str;
-    time_str = (hours > 0) ? hours + ":" + time_str : time_str;
+    time_str = second_overflow.toFixed(0); // Set seconds
+    if(second_overflow < 10) time_str = "0" + time_str; // Pad seconds with 0 if needed
+    time_str = minute_overflow.toFixed(0) + ":" + time_str; // Set minutes
+    if(hours > 0) { // If hours exist
+        if(minute_overflow < 10) { // Pad minutes with 0 if needed
+            time_str = "0" + time_str;
+        }
+        time_str = hours + ":" + time_str; // Set hours
+    }
+    
 
     // Check whether the new time element has been added yet or not
     let elem = disp.nextSibling;
