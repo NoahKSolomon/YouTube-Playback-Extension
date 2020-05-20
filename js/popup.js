@@ -44,7 +44,7 @@ function updateSpeed(speed, save_as_default=false) {
         // Inject script into current active tab to set new speed
         chrome.tabs.executeScript(tabs[0].id, {
           code: 'document.getElementsByTagName("video")[0].playbackRate = ' + speed + ';\
-                 add_new_time();'
+                 update_ui();'
         }); 
       });
     }
