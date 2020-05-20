@@ -10,6 +10,9 @@
         "js": ["js/content/set_playback.js"]  
       }
     ],
+    "web_accessible_resources": [
+      "html/time_ui.html"
+    ],
     "background": {
       "scripts": ["js/background/init.js", "js/background/hotkeys.js", "js/background/navigation_listener.js"],
       "persistent": false

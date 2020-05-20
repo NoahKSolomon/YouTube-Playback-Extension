@@ -1,9 +1,3 @@
-var keys_currently_down = {
-    "alt": false,
-    "up": false,
-    "down": false
-};
-
 // Act as a wrapper for the 'update_ui' function as the data may not always be loaded
 // This is an event listener for the 'durationchange' event for the video tag
 function update_ui_wrapper(event) {
@@ -43,14 +37,17 @@ function update_time_ui() {
         time_str = hours + ":" + time_str; // Set hours
     }
     
-
-    // Check whether the new time element has been added yet or not
-    let elem = disp.nextSibling;
-    if (elem.id !== "new-time-ytpbs") {
-        let inject_tag = "<span id=\"new-time-ytpbs\" class=\"ytp-time-duration\" style=\"margin-left: 5px;\">(" 
-                        + time_str + ")</span>";
-        disp.insertAdjacentHTML('afterend', inject_tag);
-    } else {
+    let elem = document.getElementById("new-time-ytpbs");
+    if(!elem) { // Need to get and initialize time ui
+        fetch(chrome.runtime.getURL("html/time_ui.html"))
+            .then(response => response.text())
+            .then(data => {
+                let inject_tag = data.replace("><", ">(" + time_str + ")<");
+                disp.insertAdjacentHTML('afterend', inject_tag);
+            }).catch(err => {
+                console.log("YOUTUBE DEFAULT SPEED EXTENSION ERROR: " + err);
+            });
+    } else { // time ui has been initialized
         elem.innerHTML = "(" + time_str + ")";
     }
 }
