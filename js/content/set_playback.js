@@ -1,5 +1,4 @@
 var vid = document.getElementsByTagName("video")[0];
-console.log("Content Script Injected");
 
 // Attach listeners to the video tag which handles updating the time ui
 function attach_time_ui_events() {
@@ -36,18 +35,9 @@ function update_time_ui() {
         }
         time_str = hours + ":" + time_str; // Set hours
     }
-
-    
-    console.log("video element: " + vid);
-    console.log("vid.duration = " + vid.duration);
-    console.log("vid.playbackRate = " + vid.playbackRate);
-    console.log("hours = " + hours);
-    console.log("minute_overflow = " + minute_overflow);
-    console.log("second_overflow = " + second_overflow);
     
 
     if (vid.duration) { // make sure video loaded
-        console.log("video duration is a number (" + vid.duration + "), initalizing time ui");
         let elem = document.getElementById("new-time-ytpbs");
         if(!elem) { // Need to initialize time ui
             // Fetch time_ui html element from extension
@@ -121,16 +111,13 @@ chrome.runtime.onMessage.addListener((message, sender, response) => {
             return;
         // background script telling content script to update ui
         } else if (message.fromBackground && message.refresh) {
-            console.log("Refreshing UI from navigation listener");
             response({"refreshed": "completed refreshing of ui in tab"});
             update_time_ui();
         // background script telling content script to change playback rate
         } else if (message.newspeed) {
-            console.log("Message: set new speed to " + message.newspeed);
             vid.playbackRate = message.newspeed;
             //update_time_ui();
         } else if (message.increment) {
-            console.log("Mesage: increment speed by " + message.increment);
             let cur_speed = vid.playbackRate;
             vid.playbackRate = cur_speed + message.increment;
             //update_time_ui();
