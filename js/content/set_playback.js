@@ -1,23 +1,23 @@
-// Act as a wrapper for the 'update_ui' function as the data may not always be loaded
-// This is an event listener for the 'durationchange' event for the video tag
-function update_ui_wrapper(event) {
-    console.log("TRIGGERING UI INIT");
-	update_ui();
-	document.getElementsByTagName("video")[0]
-        .removeEventListener("durationchange", update_ui_wrapper);
-}
+var vid = document.getElementsByTagName("video")[0];
+console.log("Content Script Injected");
 
-// Update all the injected ui for the extension
-function update_ui() {
-	update_time_ui();
-    //update_increment_key_pressed_ui();
+// Attach listeners to the video tag which handles updating the time ui
+function attach_time_ui_events() {
+    if (vid === undefined) {
+        vid = document.getElementsByTagName("video")[0]
+    }
+    vid.addEventListener("durationchange", update_time_ui);
+    vid.addEventListener("ratechange", update_time_ui);
 }
 
 // This function adds a new element next to the duration time of the video which contains
 // the actual time it will take to watch the video with the current speed
 function update_time_ui() {
-    let vid = document.getElementsByTagName("video")[0];
+    //let vid = document.getElementsByTagName("video")[0];
     let disp = document.getElementsByClassName("ytp-time-duration")[0];
+    if (vid == undefined) {
+        vid = document.getElementsByTagName("video")[0];
+    }
     let dur = vid.duration / vid.playbackRate;
     
     // Calculate the duration with the current speed
@@ -36,19 +36,35 @@ function update_time_ui() {
         }
         time_str = hours + ":" + time_str; // Set hours
     }
+
     
-    let elem = document.getElementById("new-time-ytpbs");
-    if(!elem) { // Need to get and initialize time ui
-        fetch(chrome.runtime.getURL("html/time_ui.html"))
-            .then(response => response.text())
-            .then(data => {
-                let inject_tag = data.replace("><", ">(" + time_str + ")<");
-                disp.insertAdjacentHTML('afterend', inject_tag);
-            }).catch(err => {
-                console.log("YOUTUBE DEFAULT SPEED EXTENSION ERROR: " + err);
-            });
-    } else { // time ui has been initialized
-        elem.innerHTML = "(" + time_str + ")";
+    console.log("video element: " + vid);
+    console.log("vid.duration = " + vid.duration);
+    console.log("vid.playbackRate = " + vid.playbackRate);
+    console.log("hours = " + hours);
+    console.log("minute_overflow = " + minute_overflow);
+    console.log("second_overflow = " + second_overflow);
+    
+
+    if (vid.duration) { // make sure video loaded
+        console.log("video duration is a number (" + vid.duration + "), initalizing time ui");
+        let elem = document.getElementById("new-time-ytpbs");
+        if(!elem) { // Need to initialize time ui
+            // Fetch time_ui html element from extension
+            fetch(chrome.runtime.getURL("html/time_ui.html")) 
+                .then(response => response.text())
+                .then(data => {
+                    // Check that element doesn't already exist before inserting
+                    if (!document.getElementById("new-time-ytpbs")) {
+                        let inject_tag = data.replace("><", ">(" + time_str + ")<"); // Insert time
+                        disp.insertAdjacentHTML('afterend', inject_tag); // Place into YT page
+                    }
+                }).catch(err => {
+                    console.log("YOUTUBE DEFAULT SPEED EXTENSION ERROR: " + err);
+                });
+        } else { // time ui has been initialized
+            elem.innerHTML = "(" + time_str + ")";
+        }
     }
 }
 
@@ -58,32 +74,24 @@ function update_increment_key_pressed_ui() {
     // The elements that YouTube uses: div with class="ytp-bezel-text-wrapper"
     // and a div with class="ytp-bezel" role="status" aria-label="XXvolume"
     // and a div with class="ytp-bezel-icon" with an svg tag in it
-    let bez_text_wrapper = document.getElementsByClassName("ytp-bezel-text")[0];
-    console.log(bez_text_wrapper);
-    let new_wrapper = bez_text_wrapper.cloneNode(true);
-    bez_text_wrapper.insertAdjacentHTML("beforebegin", new_wrapper);
-    new_wrapper.onkeydown(event => {
-        if(event.keyCode === 18) {  // Alt key pressed
-            keys_currently_down["alt"] = true;
-        } else if(event.keyCode === 38) {  // Up arrow pressed
-            keys_currently_down["up"] = true;
-        } else if(event.keyCode === 40) {  // Down arrow pressed
-            keys_currently_down["down"] = true;
-        }
-        console.log("KEYDOWN: ");
-        console.log(keys_currently_down);
-    });
-    new_wrapper.onkeyup(event => {
-        if(event.keyCode === 18) { // Alt key pressed
-            keys_currently_down["alt"] = false;
-        } else if(event.keyCode === 38) {  // Up arrow pressed
-            keys_currently_down["up"] = false;
-        } else if(event.keyCode === 40) {  // Down arrow pressed
-            keys_currently_down["down"] = false;
-        }
-        console.log("KEYUP: ");
-        console.log(keys_currently_down);
-    });
+    let volume_display = document.getElementsByClassName("ytp-bezel-text")[0].parentElement;
+    let elem = document.getElementById("increment-ytpbs");
+    if(!elem) { // Increment element doesn't exist, need to initalize
+        fetch(chrome.runtime.getURL("html/increment_ui.html")) 
+                .then(response => response.text())
+                .then(data => {
+                    if(!document.getElementById("increment-ytpbs")) {
+                        let inject_tag = data.replace(">target<", ">(" + time_str + ")<"); // Insert time
+                        disp.insertAdjacentHTML('afterend', inject_tag); // Place into YT page
+                    }
+                }).catch(err => {
+                    console.log("YOUTUBE DEFAULT SPEED EXTENSION ERROR: " + err);
+                });
+    } else { // Incremement element exists, just update
+
+    }
+    
+
 }
 
 /*
@@ -94,11 +102,39 @@ function update_increment_key_pressed_ui() {
 if(document.getElementsByTagName("video")[0] !== undefined) {
     chrome.storage.sync.get('playback', data => {
         if(data.playback != NaN && data.playback > 0) {
-        	let vid = document.getElementsByTagName("video")[0];
+        	vid = document.getElementsByTagName("video")[0];
             vid.playbackRate = data.playback;
-            //window.addEventListener('load', update_ui_wrapper)
-        	vid.addEventListener("durationchange", update_ui_wrapper);
-            update_ui();
+            attach_time_ui_events();
+            update_time_ui();
         }
     });
 }
+
+// Listen to background page for when to refresh ui in page
+// Typically when we move to a new video page but the content
+// script is not re-injected
+chrome.runtime.onMessage.addListener((message, sender, response) => {
+    if(!chrome.runtime.lastError) {
+        // Background page checking that content script has been injected
+        if(message.checkInjected) {
+            response({injected: true});
+            return;
+        // background script telling content script to update ui
+        } else if (message.fromBackground && message.refresh) {
+            console.log("Refreshing UI from navigation listener");
+            response({"refreshed": "completed refreshing of ui in tab"});
+            update_time_ui();
+        // background script telling content script to change playback rate
+        } else if (message.newspeed) {
+            console.log("Message: set new speed to " + message.newspeed);
+            vid.playbackRate = message.newspeed;
+            //update_time_ui();
+        } else if (message.increment) {
+            console.log("Mesage: increment speed by " + message.increment);
+            let cur_speed = vid.playbackRate;
+            vid.playbackRate = cur_speed + message.increment;
+            //update_time_ui();
+        }
+        
+    }
+});

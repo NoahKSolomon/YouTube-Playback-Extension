@@ -3,28 +3,11 @@ let inc_parag = document.getElementById("display_inc");
 let set_save_button = document.getElementById("playback_set_save_button");
 let speed_input_tag = document.getElementById("playback_input");
 let inc_input_tag = document.getElementById("inc_input");
-let categoy_list = [
-  "Film & Animation",
-  "Autos & Vehicles",
-  "Music",
-  "Pets & Animals",
-  "Sports",
-  "Travel & Events",
-  "Gaming",
-  "People & Blogs",
-  "Comedy",
-  "Entertainment",
-  "News & Politics",
-  "Howto & Style",
-  "Education",
-  "Nonprofits & Activism"];
 
 // Set the speed of the current active tab
 function updateSpeed(speed, save_as_default=false) {
-
   // Check for valid speeds
   if(speed != NaN && speed > 0) { // Valid speed
-
     // Save 'speed' as new dafault
     if(save_as_default) {
       chrome.storage.sync.set({playback: speed}, function() {
@@ -32,26 +15,18 @@ function updateSpeed(speed, save_as_default=false) {
         speed_parag.innerHTML = "Current default: " + speed + "x";
         // Set speed of current tab
         chrome.tabs.query({active: true, currentWindow: true}, tabs => {
-          // Inject script into current active tab to set new speed
-          chrome.tabs.executeScript(tabs[0].id, {
-            file: 'js/content/set_playback.js'
-          }); 
+          // Message current tab to set new speed
+          chrome.tabs.sendMessage(tabs[0].id, {newspeed:speed});
         });
       });
     } else { // Don't save speed as default
       // Get current active tab
       chrome.tabs.query({active: true, currentWindow: true}, tabs => {
-        // Inject script into current active tab to set new speed
-        chrome.tabs.executeScript(tabs[0].id, {
-          code: 'document.getElementsByTagName("video")[0].playbackRate = ' + speed + ';\
-                 update_ui();'
-        }); 
+        // Message current tab to set new speed
+        chrome.tabs.sendMessage(tabs[0].id, {newspeed:speed});
       });
     }
-
-    
   }
-  
 }
 
 // Display current default speed in popup.html

@@ -3,10 +3,7 @@
 // Send a message to the current active tab
 function setSpeedInActiveTab(speed) {
     chrome.tabs.query({active: true, currentWindow: true}, tabs => { // Get current active tab
-        chrome.tabs.executeScript(tabs[0].id, {
-            code: 'document.getElementsByTagName("video")[0].playbackRate = ' + speed + ';\
-                   update_ui();'
-        }); // Inject script into current active tab to set new speed
+        chrome.tabs.sendMessage(tabs[0].id, {newspeed: speed});
     }); 
 }
 
@@ -32,12 +29,16 @@ chrome.commands.onCommand.addListener( command => {
             break;
         case 'increment-speed':
             chrome.tabs.query({active:true, currentWindow:true}, tabs => {
-                chrome.tabs.executeScript(tabs[0].tabId, {file: 'js/content/increment.js'});
+                chrome.storage.sync.get("increment", data => {
+                    chrome.tabs.sendMessage(tabs[0].id, {increment: data.increment});
+                });
             });
             break;
         case 'decrement-speed':
             chrome.tabs.query({active:true, currentWindow:true}, tabs => {
-                chrome.tabs.executeScript(tabs[0].tabId, {file: 'js/content/decrement.js'});
+                chrome.storage.sync.get("increment", data => {
+                    chrome.tabs.sendMessage(tabs[0].id, {increment: -data.increment});
+                });
             });
             break;
     }
