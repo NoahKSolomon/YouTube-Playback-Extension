@@ -33,7 +33,7 @@
       },
       "set-normal-speed": {
         "suggested_key": {
-          "default": "Alt+1"
+          "default": "Alt+Shift+1"
         },
         "description": "Set video playback to normal speed"
       },
@@ -42,19 +42,19 @@
       },
       "set-default-speed": {
         "suggested_key": {
-          "default": "Alt+2"
+          "default": "Alt+Shift+2"
         },
         "description": "Set video playback to set default speed"
       },
       "increment-speed": {
         "suggested_key": {
-          "default": "Alt+Up"
+          "default": "Alt+Shift+Up"
         },
         "description": "Increase the speed of the current video by 0.25x"
       },
       "decrement-speed": {
         "suggested_key": {
-          "default": "Alt+Down"
+          "default": "Alt+Shift+Down"
         },
         "description": "Decrease the speed of the current video by 0.25x"
       }
