@@ -9,6 +9,7 @@ function attach_ui_events() {
     }
     vid.addEventListener("durationchange", update_time_ui);
     vid.addEventListener("ratechange", update_time_ui);
+    vid.addEventListener("timeupdate", update_time_ui);
     //vid.addEventListener("ratechange", update_increment_key_pressed_ui);
 }
 
@@ -28,17 +29,36 @@ function update_time_ui() {
     let hours = Math.floor(true_dur / 3600); // Length of video in hours
     let minute_overflow = Math.floor(true_dur / 60) - hours * 60; // Leftover minutes after removing hours
     let second_overflow = Math.floor(true_dur - Math.floor(true_dur / 60) * 60); // Leftover seconds after removing minutes
-    let time_str = "";
-    time_str = second_overflow.toFixed(0); // Set seconds
-    if(second_overflow < 10) time_str = "0" + time_str; // Pad seconds with 0 if needed
-    time_str = minute_overflow.toFixed(0) + ":" + time_str; // Set minutes
+    let total_time_str = "";
+    total_time_str = second_overflow.toFixed(0); // Set seconds
+    if(second_overflow < 10) total_time_str = "0" + total_time_str; // Pad seconds with 0 if needed
+    total_time_str = minute_overflow.toFixed(0) + ":" + total_time_str; // Set minutes
     if(hours > 0) { // If hours exist
         if(minute_overflow < 10) { // Pad minutes with 0 if needed
-            time_str = "0" + time_str;
+            total_time_str = "0" + total_time_str;
         }
-        time_str = hours + ":" + time_str; // Set hours
+        total_time_str = hours + ":" + total_time_str; // Set hours
+    }
+
+    // Calculate the duration with the current speed
+    // 3600 --> Number of seconds in one hour
+    // 60   --> Number of seconds in one minute
+    let true_cur_dur = vid.currentTime / vid.playbackRate;
+    hours = Math.floor(true_cur_dur / 3600); // Length of video in hours
+    minute_overflow = Math.floor(true_cur_dur / 60) - hours * 60; // Leftover minutes after removing hours
+    second_overflow = Math.floor(true_cur_dur - Math.floor(true_cur_dur / 60) * 60); // Leftover seconds after removing minutes
+    var cur_time_str = "";
+    cur_time_str = second_overflow.toFixed(0); // Set seconds
+    if(second_overflow < 10) cur_time_str = "0" + cur_time_str; // Pad seconds with 0 if needed
+    cur_time_str = minute_overflow.toFixed(0) + ":" + cur_time_str; // Set minutes
+    if(hours > 0) { // If hours exist
+        if(minute_overflow < 10) { // Pad minutes with 0 if needed
+            cur_time_str = "0" + cur_time_str;
+        }
+        cur_time_str = hours + ":" + cur_time_str; // Set hours
     }
     
+    var rate_str = vid.playbackRate.toString().slice(0,4)
 
     if (vid.duration) { // make sure video loaded
         let elem = document.getElementById("new-time-ytpbs");
@@ -49,14 +69,14 @@ function update_time_ui() {
                 .then(data => {
                     // Check that element doesn't already exist before inserting
                     if (!document.getElementById("new-time-ytpbs")) {
-                        let inject_tag = data.replace("><", ">(" + time_str + ")<"); // Insert time
+                        let inject_tag = data.replace("><", ">(" + cur_time_str + "/" + total_time_str + ") " + rate_str + "x<"); // Insert time
                         disp.insertAdjacentHTML('afterend', inject_tag); // Place into YT page
                     }
                 }).catch(err => {
                     console.log("YOUTUBE DEFAULT SPEED EXTENSION ERROR: " + err);
                 });
         } else { // time ui has been initialized
-            elem.innerHTML = "(" + time_str + ")";
+            elem.innerHTML = "(" + cur_time_str + "/" + total_time_str + ") " + rate_str + "x";
         }
     }
 }

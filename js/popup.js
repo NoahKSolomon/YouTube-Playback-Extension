@@ -50,7 +50,7 @@ inc_input_tag.addEventListener("keyup", event => {
   // Key 13 is the enter key
   if(event.keyCode === 13) {
     event.preventDefault();
-    set_save_button.click();
+    inc_set_save_button.click();
   }
 });
 
@@ -70,7 +70,7 @@ for(var i = 0; i < buttons.length; i++) {
       // Check for valid video speeds
       if(to_save != NaN && to_save > 0) {
         chrome.storage.sync.set({increment: to_save}, function() {
-          inc_parag.innerHTML = "Current default: " + to_save + "x";
+          inc_parag.innerHTML = "Current increment: " + to_save + "x";
         });
       } else {
         inc_parag.innerHTML = "Not a valid video speed. Input another speed.";
