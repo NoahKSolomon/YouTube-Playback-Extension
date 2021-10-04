@@ -1,9 +1,8 @@
 
-
 // Send a message to the current active tab
 function setSpeedInActiveTab(speed) {
     chrome.tabs.query({active: true, currentWindow: true}, tabs => { // Get current active tab
-        chrome.tabs.sendMessage(tabs[0].id, {newspeed: speed});
+        chrome.tabs.sendMessage(tabs[0].id, {newspeed: speed, hotkey:true});
     }); 
 }
 
@@ -30,14 +29,14 @@ chrome.commands.onCommand.addListener( command => {
         case 'increment-speed':
             chrome.tabs.query({active:true, currentWindow:true}, tabs => {
                 chrome.storage.sync.get("increment", data => {
-                    chrome.tabs.sendMessage(tabs[0].id, {increment: data.increment});
+                    chrome.tabs.sendMessage(tabs[0].id, {increment: data.increment, hotkey:true});
                 });
             });
             break;
         case 'decrement-speed':
             chrome.tabs.query({active:true, currentWindow:true}, tabs => {
                 chrome.storage.sync.get("increment", data => {
-                    chrome.tabs.sendMessage(tabs[0].id, {increment: -data.increment});
+                    chrome.tabs.sendMessage(tabs[0].id, {increment: -data.increment, hotkey:true});
                 });
             });
             break;

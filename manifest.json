@@ -1,6 +1,6 @@
   {
     "name": "YouTube Default Playback Speed",
-    "version": "2.1.4",
+    "version": "2.2.1",
     "description": "Set the default playback speed for YouTube videos! Complete with hotkeys to manipulate the current video speed.",
     "permissions": ["activeTab", "declarativeContent", "storage", "tabs", "*://www.youtube.com/watch*"],
     "content_scripts": [
@@ -50,13 +50,13 @@
         "suggested_key": {
           "default": "Alt+Shift+Up"
         },
-        "description": "Increase the speed of the current video by 0.25x"
+        "description": "Increase the speed of the current video by increment"
       },
       "decrement-speed": {
         "suggested_key": {
           "default": "Alt+Shift+Down"
         },
-        "description": "Decrease the speed of the current video by 0.25x"
+        "description": "Decrease the speed of the current video by increment"
       }
     },
     "options_page": "html/options.html",

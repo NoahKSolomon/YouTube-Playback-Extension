@@ -12,6 +12,15 @@
         <p id="display_inc"></p>
         <input id="inc_input" type="number" min="0.1" step="0.1">
         <button class="red" id="inc_set_save_button">Set Increment</button>
+        <p id="time_cutoff_p">Current cutoff: mm:ss</p>
+        <div>
+          <input class="inline-item" id="time_cutoff_input_minutes" type="number" min="0" step="1">
+          <p class="inline-item">:</p>
+          <input class="inline-item" id="time_cutoff_input_seconds" type="number" min="0" max="59" step="1">
+          <button class="red inline-item" id="set_cutoff_button">Set Cutoff</button>
+        </div>
+        <input type="checkbox" id="livestream_check">
+        <label id="livestream_desc">Enable for livestreams</label>
       </div>
       <div>
         <p>Quick Change for Current Tab:</p>
@@ -19,6 +28,7 @@
         <button class="red" id="normal_speed_button" title="Alt+1">1x</button>
         <button class="red" id="double_speed_button" title="Alt+2">2x</button>
       </div>
+      <a id="support-link" href="https://www.buymeacoffee.com/noahksolomon">Buy the dev a coffee</a>
       <button type="button" class="collapsible">How to Use This Extension</button>
       <div class="how-to-use-content">
         <!-- START COLLAPSIBLES -->
@@ -33,19 +43,27 @@
           </thead>
           <tbody>
             <tr>
-              <td>Alt+Shift+1</td>
-              <td>Set the current tab speed to 1x (normal speed).</td>
-            </tr>
-            <tr>
-              <td>Alt+Shift+2</td>
+              <td><a id="td-set-normal-speed" href="chrome://extensions/configureCommands"></a></td>
               <td>Set the current tab speed to specified default speed.</td>
             </tr>
             <tr>
-              <td>Alt+Shift+Up</td>
+              <td><a id="td-set-default-speed" href="chrome://extensions/configureCommands"></a></td>
+              <td>Set the current tab speed to 1x (normal speed).</td>
+            </tr>
+            <tr>
+              <td><a id="td-set-half-speed" href="chrome://extensions/configureCommands"></a></td>
+              <td>Set the current tab speed to 0.5x (half speed).</td>
+            </tr>
+            <tr>
+              <td><a id="td-set-double-speed" href="chrome://extensions/configureCommands"></a></td>
+              <td>Set the current tab speed to 2x (double speed).</td>
+            </tr>
+            <tr>
+              <td><a id="td-increment-speed" href="chrome://extensions/configureCommands"></a></td>
               <td>Increase the current tab speed by the increment amount.</td>
             </tr>
             <tr>
-              <td>Alt+Shift+Down</td>
+              <td><a id="td-decrement-speed" href="chrome://extensions/configureCommands"></a></td>
               <td>Decrease the current tab speed by the increment amount.</td>
             </tr>
           </tbody>
@@ -62,6 +80,12 @@
         <div class="how-to-use-content">
           <p>
           Similar to the default speed, you can set an increment amount using the above input field and press enter or the 'Set Increment' button. The default increment amount is 0.25x.
+          </p>
+        </div>
+        <button type="button" class="collapsible">Cutoff</button>
+        <div class="how-to-use-content">
+          <p>
+          Any video equal to or under the duration entered will not have its speed altered and will remain at 1x speed. The format is MM:SS and can be set by inputing the desired cutoff and pressing the 'Set Cutoff' button or the enter key inside the cutoff input field.
           </p>
         </div>
         <!-- END COLLAPSIBLES -->

@@ -2,7 +2,7 @@
 chrome.runtime.onInstalled.addListener(() => {
 
   // Set default playback stored to 1.0
-  chrome.storage.sync.set({playback: 1.0, increment:0.25});
+  chrome.storage.sync.set({playback: 1.0, increment:0.25, cutoff:0.0, enable_for_livestream: false});
 
   // Make sure extension is only active on YouTube pages
   var rule1 = { // Rule that enables extension on youtube video pages

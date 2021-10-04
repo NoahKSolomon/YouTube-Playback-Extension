@@ -1,6 +1,13 @@
 var vid = document.getElementsByTagName("video")[0];
 var time_ui = null;
 var inc_ui = null;
+var cutoff = 0;
+var enable_for_livestream = false;
+
+// Determine if the current youtube video is a livestream
+function is_livestream() {
+    return window.getComputedStyle(document.getElementsByClassName("ytp-live-badge")[0]).display !== 'none';
+}
 
 // Attach listeners to the video tag which handles updating the ui
 function attach_ui_events() {
@@ -8,9 +15,47 @@ function attach_ui_events() {
         vid = document.getElementsByTagName("video")[0]
     }
     vid.addEventListener("durationchange", update_time_ui);
+    vid.addEventListener("durationchange", check_cutoff_time);
     vid.addEventListener("ratechange", update_time_ui);
     vid.addEventListener("timeupdate", update_time_ui);
     //vid.addEventListener("ratechange", update_increment_key_pressed_ui);
+}
+
+// This function is responsible for updating the speed for videos under the duration
+function check_cutoff_time() {
+    
+    if (!is_livestream() || enable_for_livestream) {
+        console.log("Setting playback due to enabled or not livestream");
+        console.log("is livestream = " + is_livestream());
+        console.log("enabled for livestream: " + enable_for_livestream);
+        console.log("vid.duration = " + vid.duration);
+        console.log("cutoff = " + cutoff);
+        if (vid.duration <= cutoff) {
+            vid.playbackRate = 1;
+            console.log("Setting to 1x");
+        } else {
+            console.log("Not setting back to 1x");
+            chrome.storage.sync.get(['playback', 'cutoff'], data => {
+                if(data.playback !== NaN && data.playback > 0) {
+                    vid = document.getElementsByTagName("video")[0];
+                    cutoff = data.cutoff;
+                    if (vid.duration > data.cutoff) {
+                        console.log("Set from check_cutoff_time callback");
+                        console.log("vid.duration = " + vid.duration);
+                        console.log("cutoff = " + cutoff);
+                        vid.playbackRate = data.playback;
+                    }
+                }
+            });
+        }
+    } else {
+        console.log("did not set due to livestream");
+        console.log("Is a livestream: " + is_livestream());
+        console.log("Enabled for livestream: " + enable_for_livestream);
+    }
+
+    
+    
 }
 
 // This function adds a new element next to the duration time of the video which contains
@@ -95,23 +140,18 @@ function update_increment_key_pressed_ui() {
                 .then(response => response.text())
                 .then(data => {
                     if(!document.getElementById("increment-disp-wrapper")) {
-                        console.log("INSERTING THING");
-                        console.log("INSERTING INCREMENT HTML");
                         let volume_display = document.getElementsByClassName("ytp-bezel-text-wrapper")[0].parentElement;
                         let all_tags = data.replace(">target<", ">" + vid.playbackRate + "<"); // Insert time
                         let style_tag = all_tags.slice(0,all_tags.indexOf("</style>") + 8);
                         let inject_div = all_tags.slice(all_tags.indexOf("div") - 1);
-                        console.log("inject_div: " + inject_div);
                         document.getElementById("head").insertAdjacentHTML("beforeend", style_tag);
                         volume_display.insertAdjacentHTML('afterend', inject_div); // Place into YT page
                     }
-                    console.log("document.getElementById('increment-disp-wrapper'): " + document.getElementById("increment-disp-wrapper"));
                 }).catch(err => {
                     console.log("YOUTUBE DEFAULT SPEED EXTENSION ERROR: " + err);
                 });
     } else { // Incremement element exists, just update
         elem.innerHTML = "(" + vid.playbackRate + ")";
-        console.log("UPDATING TIME");
     }
 }
 
@@ -121,10 +161,19 @@ function update_increment_key_pressed_ui() {
 
 // Check for existence of video tags to set playback of upon initial injection
 if(document.getElementsByTagName("video")[0] !== undefined) {
-    chrome.storage.sync.get('playback', data => {
-        if(data.playback != NaN && data.playback > 0) {
+    chrome.storage.sync.get(['playback', 'cutoff', 'enable_for_livestream'], data => {
+        if(data.playback !== NaN && data.playback > 0) {
         	vid = document.getElementsByTagName("video")[0];
-            vid.playbackRate = data.playback;
+            cutoff = data.cutoff;
+            enable_for_livestream = data.enable_for_livestream;
+            if (vid.duration > cutoff) {
+                if (!is_livestream() || enable_for_livestream) {
+                    console.log("Set from script portion of content script");
+                    console.log("vid.duration = " + vid.duration);
+                    console.log("cutoff = " + cutoff);
+                    vid.playbackRate = data.playback;
+                }
+            }
             attach_ui_events();
             update_time_ui();
             //update_increment_key_pressed_ui();
@@ -147,11 +196,17 @@ chrome.runtime.onMessage.addListener((message, sender, response) => {
             update_time_ui();
         // background script telling content script to change playback rate
         } else if (message.newspeed) {
-            vid.playbackRate = message.newspeed;
+            // if vid makes cutoff and livestream set speed is allowed or is from a hotkey
+            if ((vid.duration > cutoff && (!is_livestream() || enable_for_livestream)) || message.hotkey) {
+                if (message.hotkey) console.log("Setting speed from hotkey");
+                else console.log("Setting speed dur to cutoff: dur = " + vid.duration + " > cutoff = " + cutoff);
+                vid.playbackRate = message.newspeed;
+            }
         } else if (message.increment) {
             let cur_speed = vid.playbackRate;
             vid.playbackRate = cur_speed + message.increment;
+        } else if ('enable_for_livestream' in message) {
+            enable_for_livestream = message.enable_for_livestream;
         }
-        
     }
 });
